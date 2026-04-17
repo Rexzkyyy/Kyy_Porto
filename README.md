@@ -42,15 +42,7 @@ Ini bukan sekadar portofolio biasa. Ini adalah **Cosmic Portfolio** — sebuah p
 
 ---
 
-## 📸 Preview Visual
 
-| Section Hero | Dashboard Admin |
-| :---: | :---: |
-| <img src="src/assets/lb0.png" width="300" alt="Hero Section"> | <img src="src/assets/IMG_2306.JPG.jpeg" width="300" alt="Dashboard Preview"> |
-
-> *Catatan: Gambar di atas adalah representasi visual utama dari aset proyek.*
-
----
 
 ## ⚙️ Cara Setup & Instalasi
 
