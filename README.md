@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# 🌌 Cosmic Portfolio | Ikhsanuddin Rezki
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portfolio website masa depan yang dibangun dengan fokus pada performa tinggi, estetika sinematik, dan pengalaman pengguna yang mulus. Proyek ini menggunakan arsitektur modern untuk memastikan kecepatan (60fps) dan kemudahan pengelolaan konten melalui Supabase.
 
-Currently, two official plugins are available:
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Fitur Utama
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **🚀 60 FPS Smooth Scrolling**: Menggunakan Lenis Smooth Scroll dan GSAP untuk pengalaman navigasi yang sinematik.
+- **🎨 Cinematic Aesthetic**: Desain berbasis "Dark Matter" dengan efek glassmorphism, floating particles, dan animasi premium.
+- **🛠️ Admin Dashboard**: Panel manajemen konten terintegrasi untuk mengelola projects, skills, dan pengalaman secara real-time.
+- **📱 Responsive & PWA Ready**: Optimal di semua ukuran layar, dari smartphone hingga desktop ultra-wide.
+- **⚡ Performance Optimized**: Lazy loading komponen berat, code splitting, dan minimal initial bundle size.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Stack Teknologi
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Frontend**: React 19 + TypeScript
+- **Styling**: Tailwind CSS + Framer Motion (Micro-animations)
+- **Animation**: GSAP + Typed.js (Hero section) + React-TSParticles
+- **Backend/DB**: Supabase (PostgreSQL + Auth)
+- **Build Tool**: Vite (Production optimized)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 💻 Cara Menjalankan Secara Lokal
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/Rexzkyyy/Kyy_Porto.git
+cd porto-app
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Install Dependensi
+```bash
+npm install
 ```
+
+### 3. Konfigurasi Environment Variables
+Buat file `.env` di root directory dan masukkan kredensial Supabase Anda:
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. Jalankan Development Server
+```bash
+npm run dev
+```
+Buka [http://localhost:5173](http://localhost:5173) di browser Anda.
+
+---
+
+## 🌐 Deployment (Vercel)
+
+Proyek ini siap untuk dideploy ke [Vercel](https://vercel.com/):
+1. Push kode Anda ke GitHub.
+2. Hubungkan repository di Vercel Dashboard.
+3. Tambahkan environment variables (`VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY`) di menu Settings Vercel.
+4. Klik **Deploy**!
+
+---
+
+## 📄 Lisensi
+Dibuat dengan ❤️ oleh **Ikhsanuddin Rezki**. Bebas digunakan untuk referensi pembelajaran.
