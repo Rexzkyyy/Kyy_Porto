@@ -1,0 +1,20 @@
+{
+  "name": "Ikhsanuddin Rezki — Portfolio",
+  "short_name": "Rezki.Dev",
+  "description": "Portfolio of Ikhsanuddin Rezki — Web Developer, Data Analyst, IT Support",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030014",
+  "theme_color": "#030014",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["portfolio", "technology"],
+  "lang": "id"
+}
