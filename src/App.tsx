@@ -437,7 +437,7 @@ const MobilePortrait = ({ profilePic, ringRef }: any) => {
       <div ref={ringRef} className="absolute inset-[-24px] rounded-[2.5rem] border-2 border-purple-500/30 border-t-purple-500 opacity-80" style={{ animation: 'spin 20s linear infinite', willChange: 'transform' }} />
       <div className="absolute inset-0 bg-purple-600/30 blur-[100px] opacity-60" />
       <div className="relative w-[300px] h-[350px] rounded-[24px] overflow-hidden border border-white/5 shadow-[0_0_100px_rgba(139,92,246,0.5)]" style={{ maskImage: 'linear-gradient(to bottom, black 75%, rgba(0,0,0,0.4) 90%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 75%, rgba(0,0,0,0.4) 90%, transparent 100%)' }}>
-        <img src={profilePic} alt="Portrait" className="w-full h-full object-cover object-top scale-[1.25] -translate-y-1 shadow-2xl" loading="eager" />
+        <img src={profilePic} alt="Portrait" width="300" height="350" className="w-full h-full object-cover object-top scale-[1.25] -translate-y-1 shadow-2xl" loading="eager" />
         <div className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-[220px] h-[80px] bg-purple-500/40 blur-2xl pointer-events-none" />
         <div className="absolute inset-0 bg-[#0a0a1e]/20 pointer-events-none" />
       </div>
@@ -451,7 +451,7 @@ const DesktopPortrait = ({ profilePic, ringRef }: any) => (
     <div className="absolute inset-[-45px] rounded-[3rem] border-2 border-indigo-500/10 border-b-indigo-400 opacity-70" style={{ animation: 'spin 15s linear reverse infinite', willChange: 'transform' }} />
     <div className="absolute inset-[-80px] rounded-[5rem] bg-purple-600/10 blur-[100px] opacity-40" />
     <div className="relative w-[500px] xl:w-[580px] h-[75vh] max-h-[850px] rounded-[32px] overflow-hidden border border-white/10 shadow-[0_0_150px_rgba(139,92,246,0.3)] flex items-center justify-center bg-[#0a0a1e]/10" style={{ maskImage: 'linear-gradient(to bottom, black 88%, rgba(0,0,0,0.4) 95%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 88%, rgba(0,0,0,0.4) 95%, transparent 100%)' }}>
-      <img src={profilePic} alt="Portrait" className="w-full h-full object-contain scale-[1.25] translate-y-8 group-hover:scale-[1.23] group-hover:translate-y-10 filter brightness-[1.08] contrast-[1.15] saturate-[1.05] drop-shadow-[0_40px_80px_rgba(0,0,0,0.8)]" loading="eager" style={{ transition: 'transform 0.8s ease-in-out', willChange: 'transform' }} />
+      <img src={profilePic} alt="Portrait" width="580" height="850" className="w-full h-full object-contain scale-[1.25] translate-y-8 group-hover:scale-[1.23] group-hover:translate-y-10 filter brightness-[1.08] contrast-[1.15] saturate-[1.05] drop-shadow-[0_40px_80px_rgba(0,0,0,0.8)]" loading="eager" style={{ transition: 'transform 0.8s ease-in-out', animated: true, willChange: 'transform' } as any} />
       <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-30" style={{ background: 'radial-gradient(circle at 50% 30%, rgba(139,92,246,0.4), transparent 70%)' }} />
       <div className="absolute bottom-0 left-0 right-0 h-[200px] bg-gradient-to-t from-purple-900/15 to-transparent pointer-events-none" />
       <div className="absolute bottom-[-30px] left-1/2 -translate-x-1/2 w-[400px] h-[120px] bg-purple-600/30 blur-[60px] rounded-full pointer-events-none" />
@@ -966,7 +966,7 @@ const ProjectCard = ({ project, index, onOpenDetails }: { project: any, index: n
       <motion.div style={!isMobile ? { rotateX, rotateY } : {}} className="relative min-h-[500px] h-full rounded-3xl overflow-hidden glass-morphism border border-white/5 group-hover:border-purple-500/30 transition-all duration-300 flex flex-col">
         <div className="h-64 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-[#030014] to-transparent z-10" />
-          <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+          <img src={project.image} alt={project.title} width="600" height="400" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
           <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
             <span className="px-3 py-1 rounded-lg bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 text-[9px] font-black uppercase tracking-widest text-indigo-300">
               {project.category || 'Web Programming'}
