@@ -15,7 +15,6 @@ export default defineConfig(({ mode }) => ({
         // Split heavy libraries for optimal browser caching
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'gsap': ['gsap', '@gsap/react'],
           'framer-motion': ['framer-motion'],
           'particles': ['react-tsparticles', 'tsparticles-slim'],
           'lenis': ['lenis'],
@@ -35,6 +34,6 @@ export default defineConfig(({ mode }) => ({
   } : {},
   // Optimize deps for faster dev startup
   optimizeDeps: {
-    include: ['react', 'react-dom', 'framer-motion', 'gsap', 'lenis'],
+    include: ['react', 'react-dom', 'framer-motion', 'lenis'],
   },
 }))
