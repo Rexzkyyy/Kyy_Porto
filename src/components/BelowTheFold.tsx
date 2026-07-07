@@ -344,6 +344,140 @@ const SkillCard = ({ skill }: { skill: any }) => {
 };
 
 // --- Projects Section ---
+// Item per halaman: 4 di mobile (2×2), 6 di desktop (3×2)
+const ITEMS_PER_PAGE_MOBILE = 4;
+const ITEMS_PER_PAGE_DESKTOP = 6;
+
+const ProjectsGrid = ({ filteredProjects, onOpenDetails }: { filteredProjects: any[], onOpenDetails: (p: any) => void }) => {
+  const isMobile = useIsMobile();
+  const itemsPerPage = isMobile ? ITEMS_PER_PAGE_MOBILE : ITEMS_PER_PAGE_DESKTOP;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset ke halaman 1 saat filter atau ukuran layar berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredProjects, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+  const paginatedProjects = filteredProjects.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // useCallback agar fungsi tidak dibuat ulang tiap render
+  const handlePageChange = React.useCallback((page: number) => {
+    if (page === currentPage) return;
+
+    const section = document.getElementById('projects');
+    if (section) {
+      const offset = section.getBoundingClientRect().top + window.scrollY - 80;
+      const distance = Math.abs(window.scrollY - offset);
+
+      if (distance > 50) {
+        // Instant scroll — synchronous, terjadi SEBELUM React re-render
+        // Tidak ada animasi = tidak ada race condition, selalu akurat 100%
+        window.scrollTo(0, offset);
+      }
+    }
+    // Ganti halaman setelah posisi scroll sudah benar
+    setCurrentPage(page);
+  }, [currentPage]);
+
+  return (
+    <div>
+      {/* Grid: 2 kolom di mobile, 2 di tablet, 3 di desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        <AnimatePresence mode="popLayout">
+          {paginatedProjects.map((project, index) => (
+            <ProjectCard
+              key={project.id || index}
+              project={project}
+              index={index}
+              onOpenDetails={onOpenDetails}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex items-center justify-center gap-2 mt-10 md:mt-16"
+        >
+          {/* Prev Button — touch target min 44px */}
+          <motion.button
+            whileHover={currentPage > 1 ? { scale: 1.05 } : {}}
+            whileTap={currentPage > 1 ? { scale: 0.95 } : {}}
+            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            aria-label="Halaman sebelumnya"
+            className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-5 min-h-[44px] py-2 md:py-3 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border ${
+              currentPage === 1
+                ? 'border-white/5 text-white/20 cursor-not-allowed'
+                : 'border-white/10 text-gray-300 hover:text-white hover:bg-white/10 bg-white/5 cursor-pointer active:scale-95'
+            }`}
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="hidden sm:inline">Prev</span>
+          </motion.button>
+
+          {/* Page Numbers */}
+          <div className="flex items-center gap-1 md:gap-1.5 px-1 md:px-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <motion.button
+                key={page}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handlePageChange(page)}
+                aria-label={`Halaman ${page}`}
+                aria-current={currentPage === page ? 'page' : undefined}
+                className={`w-10 h-10 md:w-11 md:h-11 rounded-xl text-[11px] font-black tracking-wider transition-all duration-300 border ${
+                  currentPage === page
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-[0_0_20px_rgba(99,102,241,0.4)]'
+                    : 'border-white/10 text-gray-400 hover:text-white hover:bg-white/10 bg-white/5 active:scale-95'
+                }`}
+              >
+                {page}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Next Button — touch target min 44px */}
+          <motion.button
+            whileHover={currentPage < totalPages ? { scale: 1.05 } : {}}
+            whileTap={currentPage < totalPages ? { scale: 0.95 } : {}}
+            onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            aria-label="Halaman berikutnya"
+            className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-5 min-h-[44px] py-2 md:py-3 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border ${
+              currentPage === totalPages
+                ? 'border-white/5 text-white/20 cursor-not-allowed'
+                : 'border-white/10 text-gray-300 hover:text-white hover:bg-white/10 bg-white/5 cursor-pointer active:scale-95'
+            }`}
+          >
+            <span className="hidden sm:inline">Next</span>
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+            </svg>
+          </motion.button>
+        </motion.div>
+      )}
+
+      {/* Info halaman */}
+      {totalPages > 1 && (
+        <p className="text-center text-gray-600 text-[10px] font-mono uppercase tracking-widest mt-3 md:mt-4">
+          Hal. {currentPage}/{totalPages} &mdash; {filteredProjects.length} Proyek
+        </p>
+      )}
+    </div>
+  );
+};
+
 const Projects = () => {
   const [projects, setProjects] = useState<any[]>(DEFAULT_PROJECTS);
   const [loading, setLoading] = useState(true);
@@ -424,20 +558,23 @@ const Projects = () => {
           </motion.p>
         </div>
 
-        {/* Filter Bar */}
-        <div className="flex flex-wrap gap-2 mb-12 p-2 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl w-fit">
-          {filters.map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${activeFilter === filter
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)]'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+        {/* Filter Bar — scrollable horizontal di mobile */}
+        <div className="mb-8 md:mb-12">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 p-2 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl w-full md:w-fit">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`flex-shrink-0 min-h-[40px] px-4 md:px-6 py-2 md:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                  activeFilter === filter
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)]'
+                    : 'text-gray-400 active:text-white hover:text-white hover:bg-white/5'
                 }`}
-            >
-              {filter}
-            </button>
-          ))}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading ? (
@@ -445,18 +582,10 @@ const Projects = () => {
             <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project, index) => (
-                <ProjectCard
-                  key={project.id || index}
-                  project={project}
-                  index={index}
-                  onOpenDetails={setSelectedProject}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          <ProjectsGrid
+            filteredProjects={filteredProjects}
+            onOpenDetails={setSelectedProject}
+          />
         )}
       </div>
 
@@ -577,87 +706,117 @@ const ProjectDetailModal = ({ project, onClose }: { project: any, onClose: () =>
   );
 };
 
-const ProjectCard = ({ project, index, onOpenDetails }: { project: any, index: number, onOpenDetails: (p: any) => void }) => {
+const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: any, index: number, onOpenDetails: (p: any) => void }) => {
   const isMobile = useIsMobile();
+  // Motion values hanya dibuat saat desktop — hemat memori di mobile
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotateX = useSpring(useTransform(y, [-100, 100], [10, -10]), { stiffness: 100, damping: 30 });
   const rotateY = useSpring(useTransform(x, [-100, 100], [-10, 10]), { stiffness: 100, damping: 30 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (isMobile) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set(e.clientX - centerX);
-    y.set(e.clientY - centerY);
-  };
+    x.set(e.clientX - (rect.left + rect.width / 2));
+    y.set(e.clientY - (rect.top + rect.height / 2));
+  }, [isMobile, x, y]);
+
+  const handleMouseLeave = React.useCallback(() => {
+    x.set(0); y.set(0);
+  }, [x, y]);
 
   const IconComponent = ICON_MAP[project.icon_name] || Code2;
 
   return (
-    <motion.div initial={{ opacity: 0, y: isMobile ? 20 : 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ delay: isMobile ? 0 : index * 0.1, duration: isMobile ? 0.4 : 0.8 }} onMouseMove={handleMouseMove} onMouseLeave={() => { x.set(0); y.set(0); }} style={{ perspective: 1000 }} className="group">
-      <motion.div style={!isMobile ? { rotateX, rotateY } : {}} className="relative min-h-[500px] h-full rounded-3xl overflow-hidden glass-morphism border border-white/5 group-hover:border-purple-500/30 transition-all duration-300 flex flex-col">
-        <div className="h-64 relative overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: isMobile ? 16 : 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ delay: isMobile ? 0 : index * 0.08, duration: isMobile ? 0.3 : 0.6 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={!isMobile ? { perspective: 1000 } : {}}
+      className="group"
+    >
+      <motion.div
+        style={!isMobile ? { rotateX, rotateY } : {}}
+        className="relative h-full rounded-2xl md:rounded-3xl overflow-hidden glass-morphism border border-white/5 group-hover:border-purple-500/30 transition-all duration-300 flex flex-col"
+      >
+        {/* Image */}
+        <div className="h-36 sm:h-44 md:h-56 lg:h-64 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-[#030014] to-transparent z-10" />
-          <img src={project.image} alt={project.title} width="600" height="400" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-          <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-            <span className="px-3 py-1 rounded-lg bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 text-[9px] font-black uppercase tracking-widest text-indigo-300">
-              {project.category || 'Web Programming'}
+          <img
+            src={project.image}
+            alt={project.title}
+            width="600" height="400"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="absolute top-2 md:top-4 left-2 md:left-4 z-20">
+            <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-md md:rounded-lg bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 text-[8px] md:text-[9px] font-black uppercase tracking-widest text-indigo-300">
+              {project.category || 'Web'}
             </span>
           </div>
-          <div className="absolute top-4 right-4 z-20 flex gap-2">
-            <div className="p-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-purple-400">
-              <IconComponent className="w-5 h-5" />
+          <div className="absolute top-2 md:top-4 right-2 md:right-4 z-20">
+            <div className="p-2 md:p-3 rounded-lg md:rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-purple-400">
+              <IconComponent className="w-3.5 h-3.5 md:w-5 md:h-5" />
             </div>
           </div>
         </div>
-        <div className="p-8 flex-1 flex flex-col">
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {project.tech.map((t: string) => <span key={t} className="px-3 py-1 text-[10px] font-mono tracking-widest uppercase bg-purple-500/10 text-purple-300 border border-purple-500/20 rounded-full">{t}</span>)}
+
+        {/* Content */}
+        <div className="p-4 md:p-6 lg:p-8 flex-1 flex flex-col">
+          <div className="space-y-2 md:space-y-4">
+            {/* Tech tags — max 3 di mobile */}
+            <div className="flex flex-wrap gap-1 md:gap-2">
+              {project.tech.slice(0, isMobile ? 2 : project.tech.length).map((t: string) => (
+                <span key={t} className="px-2 md:px-3 py-0.5 md:py-1 text-[8px] md:text-[10px] font-mono tracking-widest uppercase bg-purple-500/10 text-purple-300 border border-purple-500/20 rounded-full">
+                  {t}
+                </span>
+              ))}
             </div>
-            <h3 className="text-3xl font-black font-display tracking-tight text-white group-hover:text-purple-400 transition-colors duration-500">
+            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black font-display tracking-tight text-white group-hover:text-purple-400 transition-colors duration-500 line-clamp-2">
               {project.title}
             </h3>
-
-            <p className="text-gray-400/80 text-base leading-relaxed line-clamp-3 font-medium">
+            <p className="text-gray-400/80 text-xs md:text-sm lg:text-base leading-relaxed line-clamp-2 md:line-clamp-3 font-medium">
               {project.description}
             </p>
           </div>
 
-          <div className="mt-auto pt-6 border-t border-white/5">
-            <div className="flex items-center justify-between gap-4">
-              <motion.button
+          <div className="mt-auto pt-3 md:pt-6 border-t border-white/5">
+            <div className="flex items-center gap-2">
+              <button
                 onClick={() => onOpenDetails(project)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 hover:bg-white/10"
+                className="flex-1 min-h-[40px] px-2 md:px-4 py-2 md:py-3 bg-white/5 border border-white/10 rounded-lg md:rounded-xl text-white font-bold text-[9px] md:text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-1.5 hover:bg-white/10 active:scale-95"
               >
-                <Sparkles className="w-3 h-3 text-purple-400" />
-                Detail Artifak
-              </motion.button>
-
-              <motion.button
+                <Sparkles className="w-3 h-3 text-purple-400 flex-shrink-0" />
+                <span className="hidden sm:inline">Detail</span>
+                <span className="sm:hidden">Info</span>
+              </button>
+              <button
                 onClick={() => onOpenDetails(project)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl text-white font-bold text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20"
+                className="flex-1 min-h-[40px] px-2 md:px-4 py-2 md:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg md:rounded-xl text-white font-bold text-[9px] md:text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/20 active:scale-95"
               >
-                <Globe className="w-3 h-3" />
-                Lihat Artiffak
-              </motion.button>
+                <Globe className="w-3 h-3 flex-shrink-0" />
+                <span className="hidden sm:inline">Lihat</span>
+                <span className="sm:hidden">Open</span>
+              </button>
             </div>
           </div>
         </div>
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent" />
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 blur-[80px]" />
-        </div>
+
+        {/* Hover glow — hanya desktop */}
+        {!isMobile && (
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 blur-[80px]" />
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
-};
+});
 
 // --- Journey (Experience) Section ---
 const Journey = () => {
