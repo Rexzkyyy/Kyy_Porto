@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useAnimationFrame } from 'framer-motion';
 import {
   Github, Mail,
@@ -82,7 +82,7 @@ const DEFAULT_PROJECTS = [
   },
   {
     title: "Cosmic Portfolio",
-    description: "The very portfolio you are browsing—built for speed, aesthetics, and cinematic impact.",
+    description: "The very portfolio you are browsingâ€”built for speed, aesthetics, and cinematic impact.",
     image: "/src/assets/lb0.webp",
     tech: ["React", "Three.js", "Framer"],
     github: "https://github.com/Rexzkyyy",
@@ -344,7 +344,7 @@ const SkillCard = ({ skill }: { skill: any }) => {
 };
 
 // --- Projects Section ---
-// Item per halaman: 4 di mobile (2×2), 6 di desktop (3×2)
+// Item per halaman: 4 di mobile (2Ã—2), 6 di desktop (3Ã—2)
 const ITEMS_PER_PAGE_MOBILE = 4;
 const ITEMS_PER_PAGE_DESKTOP = 6;
 
@@ -374,7 +374,7 @@ const ProjectsGrid = ({ filteredProjects, onOpenDetails }: { filteredProjects: a
       const distance = Math.abs(window.scrollY - offset);
 
       if (distance > 50) {
-        // Instant scroll — synchronous, terjadi SEBELUM React re-render
+        // Instant scroll â€” synchronous, terjadi SEBELUM React re-render
         // Tidak ada animasi = tidak ada race condition, selalu akurat 100%
         window.scrollTo(0, offset);
       }
@@ -407,7 +407,7 @@ const ProjectsGrid = ({ filteredProjects, onOpenDetails }: { filteredProjects: a
           transition={{ delay: 0.2 }}
           className="flex items-center justify-center gap-2 mt-10 md:mt-16"
         >
-          {/* Prev Button — touch target min 44px */}
+          {/* Prev Button â€” touch target min 44px */}
           <motion.button
             whileHover={currentPage > 1 ? { scale: 1.05 } : {}}
             whileTap={currentPage > 1 ? { scale: 0.95 } : {}}
@@ -447,7 +447,7 @@ const ProjectsGrid = ({ filteredProjects, onOpenDetails }: { filteredProjects: a
             ))}
           </div>
 
-          {/* Next Button — touch target min 44px */}
+          {/* Next Button â€” touch target min 44px */}
           <motion.button
             whileHover={currentPage < totalPages ? { scale: 1.05 } : {}}
             whileTap={currentPage < totalPages ? { scale: 0.95 } : {}}
@@ -558,7 +558,7 @@ const Projects = () => {
           </motion.p>
         </div>
 
-        {/* Filter Bar — scrollable horizontal di mobile */}
+        {/* Filter Bar â€” scrollable horizontal di mobile */}
         <div className="mb-8 md:mb-12">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 p-2 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl w-full md:w-fit">
             {filters.map((filter) => (
@@ -708,7 +708,7 @@ const ProjectDetailModal = ({ project, onClose }: { project: any, onClose: () =>
 
 const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: any, index: number, onOpenDetails: (p: any) => void }) => {
   const isMobile = useIsMobile();
-  // Motion values hanya dibuat saat desktop — hemat memori di mobile
+  // Motion values hanya dibuat saat desktop â€” hemat memori di mobile
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotateX = useSpring(useTransform(y, [-100, 100], [10, -10]), { stiffness: 100, damping: 30 });
@@ -768,7 +768,7 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
         {/* Content */}
         <div className="p-4 md:p-6 lg:p-8 flex-1 flex flex-col">
           <div className="space-y-2 md:space-y-4">
-            {/* Tech tags — max 3 di mobile */}
+            {/* Tech tags â€” max 3 di mobile */}
             <div className="flex flex-wrap gap-1 md:gap-2">
               {project.tech.slice(0, isMobile ? 2 : project.tech.length).map((t: string) => (
                 <span key={t} className="px-2 md:px-3 py-0.5 md:py-1 text-[8px] md:text-[10px] font-mono tracking-widest uppercase bg-purple-500/10 text-purple-300 border border-purple-500/20 rounded-full">
@@ -806,7 +806,7 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
           </div>
         </div>
 
-        {/* Hover glow — hanya desktop */}
+        {/* Hover glow â€” hanya desktop */}
         {!isMobile && (
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent" />
@@ -818,96 +818,561 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
   );
 });
 
-// --- Journey (Experience) Section ---
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// JOURNEY / CAREER PATH SECTION
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+// Decoration themes for each experience entry (cycled by index)
+const JOURNEY_DECORATIONS = [
+  { gradient: "from-indigo-600/30 via-purple-600/20 to-transparent", accent: "rgb(99,102,241)", icon: "briefcase" },
+  { gradient: "from-purple-600/30 via-pink-600/20 to-transparent",   accent: "rgb(168,85,247)", icon: "code"      },
+  { gradient: "from-cyan-600/30 via-indigo-600/20 to-transparent",   accent: "rgb(6,182,212)",  icon: "zap"       },
+  { gradient: "from-emerald-600/30 via-teal-600/20 to-transparent",  accent: "rgb(16,185,129)", icon: "globe"     },
+] as const;
+
+// Icon map outside component â€” never recreated on render
+const JOURNEY_ICONS: Record<string, React.ReactNode> = {
+  briefcase: <Briefcase className="w-10 h-10" />,
+  code:      <Code2     className="w-10 h-10" />,
+  zap:       <Zap       className="w-10 h-10" />,
+  globe:     <Globe     className="w-10 h-10" />,
+};
+
+// â”€â”€ Image gallery sub-layouts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const GalleryImg = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => (
+  <img
+    src={src} alt={alt} loading="lazy" decoding="async"
+    className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${className}`}
+  />
+);
+
+const ImageSingle = ({ src, alt }: { src: string; alt: string }) => (
+  <div className="absolute inset-0">
+    <GalleryImg src={src} alt={alt} />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+  </div>
+);
+
+const ImageMosaic = ({ images, alt }: { images: string[]; alt: string }) => {
+  const hasThird = images.length >= 3;
+  return (
+    <div className="absolute inset-0 flex gap-0.5">
+      <div className="flex-1 overflow-hidden"><GalleryImg src={images[0]} alt={alt} /></div>
+      <div className={`flex flex-col gap-0.5 ${hasThird ? "w-[38%]" : "w-[45%]"}`}>
+        <div className="flex-1 overflow-hidden"><GalleryImg src={images[1]} alt={`${alt} 2`} /></div>
+        {hasThird && <div className="flex-1 overflow-hidden"><GalleryImg src={images[2]} alt={`${alt} 3`} /></div>}
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+    </div>
+  );
+};
+
+const ImageMasonry = ({ images, alt }: { images: string[]; alt: string }) => {
+  const visible = images.slice(0, 4);
+  const extra   = images.length - 4;
+  return (
+    <div className="absolute inset-0 grid grid-cols-2 gap-0.5">
+      {visible.map((src, i) => (
+        <div key={i} className="relative overflow-hidden">
+          <GalleryImg src={src} alt={`${alt} ${i + 1}`} />
+          {i === 3 && extra > 0 && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+              <span className="text-white font-black text-2xl">+{extra}</span>
+            </div>
+          )}
+        </div>
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+    </div>
+  );
+};
+
+// â”€â”€ Visual / Decoration panel (right or left of card) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const JourneyVisualPanel = React.memo(({
+  index, exp, onOpen,
+}: { index: number; exp: any; onOpen: () => void }) => {
+  const deco    = JOURNEY_DECORATIONS[index % JOURNEY_DECORATIONS.length];
+  const images: string[] = Array.isArray(exp.images) && exp.images.length > 0 ? exp.images : [];
+  const hasImages = images.length > 0;
+
+  return (
+    <motion.div
+      className="group relative w-full h-44 md:h-72 rounded-[1.75rem] overflow-hidden border border-white/5 cursor-pointer"
+      onClick={hasImages ? onOpen : undefined}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 280, damping: 28 }}
+      style={{ background: "#080820" }}
+    >
+      {/* â”€â”€ Real image layouts â”€â”€ */}
+      {hasImages && images.length === 1 && <ImageSingle src={images[0]} alt={exp.company} />}
+      {hasImages && images.length >= 2 && images.length <= 3 && <ImageMosaic images={images} alt={exp.company} />}
+      {hasImages && images.length >= 4  && <ImageMasonry images={images} alt={exp.company} />}
+
+      {/* â”€â”€ Decorative art (no images) â”€â”€ */}
+      {!hasImages && (
+        <>
+          {/* Background gradient */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${deco.gradient} opacity-70 group-hover:opacity-100 transition-opacity duration-500`} />
+
+          {/* Grid lines */}
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `linear-gradient(${deco.accent}33 1px, transparent 1px),
+                                linear-gradient(90deg, ${deco.accent}33 1px, transparent 1px)`,
+              backgroundSize: "40px 40px",
+            }}
+          />
+
+          {/* Orbiting rings â€” CSS animation via inline style, no JS per frame */}
+          {[50, 90].map((size, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full border"
+              style={{
+                width: size, height: size,
+                top: "50%", left: "50%",
+                transform: `translate(-50%, -50%)`,
+                borderColor: `${deco.accent}50`,
+                animation: `spin ${10 + i * 6}s linear infinite ${i % 2 === 0 ? "" : "reverse"}`,
+              }}
+            />
+          ))}
+
+          {/* Glow blob */}
+          <div
+            className="absolute w-24 h-24 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"
+            style={{ background: deco.accent, top: "30%", left: "30%" }}
+          />
+
+          {/* Center icon + label */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
+            <div
+              className="p-4 rounded-2xl border group-hover:-translate-y-1.5 transition-transform duration-500"
+              style={{ background: `${deco.accent}18`, borderColor: `${deco.accent}40`, color: deco.accent }}
+            >
+              {JOURNEY_ICONS[deco.icon]}
+            </div>
+            <div className="text-center px-4">
+              <p className="text-white/80 font-black text-sm uppercase tracking-widest leading-none">{exp.company}</p>
+              <p className="text-white/40 font-mono text-[10px] uppercase tracking-[0.3em] mt-1">{exp.period}</p>
+            </div>
+          </div>
+
+          {/* Shimmer line â€” CSS only */}
+          <div
+            className="absolute bottom-0 left-0 h-[2px] w-2/5 rounded-full opacity-60 group-hover:opacity-100 group-hover:w-full transition-all duration-700"
+            style={{ background: `linear-gradient(to right, transparent, ${deco.accent}, transparent)` }}
+          />
+        </>
+      )}
+
+      {/* â”€â”€ Hover overlay for image panels â”€â”€ */}
+      {hasImages && (
+        <div className="absolute bottom-0 left-0 right-0 p-3 z-20 bg-gradient-to-t from-black/70 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white font-black text-xs uppercase tracking-widest leading-none">{exp.company}</p>
+              <p className="text-white/50 font-mono text-[9px] mt-0.5">{images.length} foto Â· klik untuk lihat semua</p>
+            </div>
+            <ExternalLink className="w-3.5 h-3.5 text-white/70" />
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+});
+
+// â”€â”€ Single experience card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const JourneyCard = React.memo(({
+  exp, isAlignRight, onOpen,
+}: { exp: any; isAlignRight: boolean; onOpen: () => void }) => {
+  const align = isAlignRight ? "md:text-right" : "";
+  const alignRow = isAlignRight ? "md:flex-row-reverse" : "";
+
+  return (
+    <motion.div
+      className="group relative p-6 md:p-8 rounded-[1.75rem] border border-white/5 glass-morphism
+                 overflow-hidden cursor-pointer
+                 hover:border-indigo-500/40 hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)]
+                 hover:-translate-y-1 transition-all duration-400 h-full"
+      onClick={onOpen}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ type: "spring", stiffness: 300, damping: 28 }}
+    >
+      {/* Subtle glow on hover */}
+      <div className="absolute top-0 right-0 w-36 h-36 bg-indigo-600/8 blur-[50px]
+                      opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+      <div className="relative z-10">
+        {/* Period + icon */}
+        <div className={`flex items-center gap-3 mb-4 ${alignRow}`}>
+          <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20
+                          flex items-center justify-center flex-shrink-0
+                          group-hover:bg-indigo-500/20 transition-colors duration-300">
+            <Briefcase className="w-4 h-4 text-indigo-400" />
+          </div>
+          <span className="font-mono tracking-widest text-[10px] font-bold uppercase text-indigo-400">
+            {exp.period}
+          </span>
+        </div>
+
+        {/* Role */}
+        <h3 className={`text-lg md:text-xl font-black uppercase tracking-tight mb-1.5
+                        text-white group-hover:text-indigo-300 transition-colors duration-300 leading-tight ${align}`}>
+          {exp.role}
+        </h3>
+
+        {/* Company */}
+        <p className={`text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider ${align}`}>
+          {exp.company}
+        </p>
+
+        {/* Description */}
+        <p className={`text-gray-500 text-sm leading-relaxed line-clamp-3 ${align}`}>
+          {exp.description}
+        </p>
+
+        {/* Tags preview */}
+        {Array.isArray(exp.tags) && exp.tags.length > 0 && (
+          <div className={`flex flex-wrap gap-1.5 mt-4 ${isAlignRight ? "md:justify-end" : ""}`}>
+            {exp.tags.slice(0, 3).map((tag: string) => (
+              <span key={tag} className="px-2.5 py-1 text-[9px] font-mono tracking-widest uppercase
+                                        bg-indigo-500/8 text-indigo-400/70 border border-indigo-500/15
+                                        rounded-lg">
+                {tag}
+              </span>
+            ))}
+            {exp.tags.length > 3 && (
+              <span className="px-2.5 py-1 text-[9px] font-mono text-gray-600 rounded-lg border border-white/5">
+                +{exp.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* CTA button */}
+        <div className={`mt-5 flex ${isAlignRight ? "md:justify-end" : ""}`}>
+          <button
+            onClick={(e) => { e.stopPropagation(); onOpen(); }}
+            className="min-h-[44px] flex items-center gap-2 px-5 py-2.5 rounded-xl
+                       text-[10px] font-black uppercase tracking-widest
+                       bg-white/5 border border-white/10 text-gray-400
+                       hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-300
+                       active:scale-95 transition-all duration-300"
+          >
+            <ExternalLink className="w-3 h-3" />
+            Detail
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom active bar */}
+      <div className="absolute bottom-0 left-0 h-[2px] w-0 rounded-full
+                      bg-gradient-to-r from-purple-500 to-indigo-500
+                      group-hover:w-full transition-all duration-500" />
+    </motion.div>
+  );
+});
+
+// â”€â”€ Experience Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const ExperienceModal = React.memo(({ exp, onClose }: { exp: any; onClose: () => void }) => {
+  // Escape key to close
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  // Lock body scroll while open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const images: string[] = Array.isArray(exp.images) ? exp.images : [];
+  const tags:   string[] = Array.isArray(exp.tags)   ? exp.tags   : [];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-8"
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-[#030014]/80 backdrop-blur-lg" onClick={onClose} />
+
+      <motion.div
+        initial={{ opacity: 0, y: 60 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 60 }}
+        transition={{ type: "spring", duration: 0.45, bounce: 0.2 }}
+        className="relative w-full sm:max-w-2xl bg-[#080820] border border-white/10
+                   rounded-t-[2rem] sm:rounded-[2rem] overflow-hidden
+                   shadow-[0_0_60px_rgba(99,102,241,0.15)]
+                   max-h-[92vh] sm:max-h-[90vh] flex flex-col"
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          aria-label="Tutup"
+          className="absolute top-4 right-4 z-50 p-2.5 rounded-full
+                     bg-black/50 border border-white/10 text-white/50
+                     hover:text-white hover:bg-white/10 active:scale-90 transition-all"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Header */}
+        <div className="relative h-32 md:h-44 overflow-hidden flex-shrink-0 bg-[#050015]">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/25 via-purple-600/15 to-transparent" />
+          {/* Subtle grid */}
+          <div
+            className="absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage: `linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)`,
+              backgroundSize: "32px 32px",
+            }}
+          />
+          {/* Two decorative rings */}
+          {[80, 140].map((size, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full border border-indigo-500/15"
+              style={{
+                width: size, height: size,
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                animation: `spin ${12 + i * 5}s linear infinite ${i === 1 ? "reverse" : ""}`,
+              }}
+            />
+          ))}
+          {/* Content */}
+          <div className="absolute inset-0 flex items-center gap-4 md:gap-6 px-6 md:px-8">
+            <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex-shrink-0">
+              <Briefcase className="w-6 h-6 md:w-8 md:h-8 text-indigo-400" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-indigo-400 font-mono text-[10px] uppercase tracking-[0.25em] mb-0.5">{exp.period}</p>
+              <h2 className="text-xl md:text-2xl font-black uppercase text-white tracking-tight leading-tight truncate">{exp.role}</h2>
+              <p className="text-gray-400 font-semibold text-xs md:text-sm uppercase tracking-wider mt-0.5 truncate">{exp.company}</p>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#080820] to-transparent" />
+        </div>
+
+        {/* Scrollable body */}
+        <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar space-y-5 flex-1">
+
+          {/* Gallery */}
+          {images.length > 0 && (
+            <div>
+              <p className="text-[9px] font-black text-white/25 uppercase tracking-[0.3em] mb-2.5">Dokumentasi & Galeri</p>
+              {images.length === 1 ? (
+                <div className="rounded-xl overflow-hidden border border-white/5 h-44 md:h-52">
+                  <img src={images[0]} alt={exp.role} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                </div>
+              ) : images.length <= 3 ? (
+                <div className="flex gap-1.5 h-36 md:h-44">
+                  <div className="flex-1 rounded-xl overflow-hidden border border-white/5">
+                    <img src={images[0]} alt={`${exp.role} 1`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                  </div>
+                  <div className="flex flex-col gap-1.5 w-[38%]">
+                    {images.slice(1).map((src, i) => (
+                      <div key={i} className="flex-1 rounded-xl overflow-hidden border border-white/5">
+                        <img src={src} alt={`${exp.role} ${i + 2}`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-hide">
+                  {images.map((src, i) => (
+                    <div key={i} className="flex-shrink-0 w-32 h-32 md:w-36 md:h-36 rounded-xl overflow-hidden border border-white/5">
+                      <img src={src} alt={`${exp.role} ${i + 1}`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Description */}
+          <div>
+            <p className="text-[9px] font-black text-white/25 uppercase tracking-[0.3em] mb-2.5">Deskripsi Pekerjaan</p>
+            <p className="text-gray-300 leading-relaxed text-sm md:text-base">{exp.description}</p>
+          </div>
+
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div>
+              <p className="text-[9px] font-black text-white/25 uppercase tracking-[0.3em] mb-2.5">Skills & Tools</p>
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <span key={tag} className="px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase
+                                            bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded-lg">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Close button */}
+          <div className="pt-2 border-t border-white/5">
+            <button
+              onClick={onClose}
+              className="w-full min-h-[48px] border border-white/10 rounded-xl text-white
+                         font-bold text-[11px] tracking-[0.2em] uppercase
+                         bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+});
+
+// â”€â”€ Timeline dot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const TimelineDot = () => (
+  <div className="absolute left-0 md:left-1/2 z-20 md:-translate-x-1/2" style={{ top: "2rem" }}>
+    <div className="relative w-4 h-4 rounded-full bg-indigo-500 border-[3px] border-[#030014]
+                    shadow-[0_0_12px_rgba(99,102,241,0.6)]">
+      <span className="absolute inset-0 rounded-full bg-indigo-400/30"
+            style={{ animation: "ping 2.5s cubic-bezier(0,0,0.2,1) infinite" }} />
+    </div>
+  </div>
+);
+
+// â”€â”€ Journey Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Journey = () => {
   const [experiences, setExperiences] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading,     setLoading]     = useState(true);
+  const [selectedExp, setSelectedExp] = useState<any>(null);
 
   useEffect(() => {
-    const fetchExperiences = async () => {
-      try {
-        const { data, error } = await supabase.from('experiences').select('*').order('id', { ascending: false });
-        if (error) throw error;
-        if (data) setExperiences(data);
-      } catch (err) {
-        console.error('Error fetching experiences:', err);
-      } finally {
+    supabase
+      .from("experiences")
+      .select("*")
+      .order("id", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) console.error("Error fetching experiences:", error);
+        else if (data) setExperiences(data);
         setLoading(false);
-      }
-    };
-    fetchExperiences();
+      });
   }, []);
+
+  const handleOpen  = (exp: any) => setSelectedExp(exp);
+  const handleClose = ()         => setSelectedExp(null);
 
   if (loading && experiences.length === 0) return null;
 
   return (
-    <section id="journey" className="relative py-32 px-6 md:px-12 bg-[#030014] overflow-hidden text-left">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
+    <section id="journey" className="relative py-24 md:py-32 px-5 md:px-12 bg-[#030014] overflow-hidden">
+      {/* Ambient glows */}
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-600/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col mb-24 max-w-2xl">
+
+        {/* â”€â”€ Section header â”€â”€ */}
+        <div className="mb-16 md:mb-24 max-w-2xl">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="flex items-center gap-4 mb-6"
+            className="flex items-center gap-4 mb-5"
           >
-            <div className="w-16 h-[2px] bg-gradient-to-r from-indigo-500 to-transparent" />
-            <span className="text-indigo-400 font-mono tracking-[0.4em] uppercase text-xs font-bold">The Career Path</span>
+            <div className="w-14 h-[2px] bg-gradient-to-r from-indigo-500 to-transparent" />
+            <span className="text-indigo-400 font-mono tracking-[0.4em] uppercase text-[10px] font-bold">
+              The Career Path
+            </span>
           </motion.div>
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-5xl md:text-7xl font-black font-display uppercase tracking-tighter text-white"
+            className="text-4xl md:text-6xl lg:text-7xl font-black font-display uppercase tracking-tighter text-white"
           >
-            Professional <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-400">Journey</span>
+            Professional <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-400">
+              Journey
+            </span>
           </motion.h2>
         </div>
 
+        {/* â”€â”€ Timeline â”€â”€ */}
         <div className="relative">
-          <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent md:-translate-x-1/2" />
+          {/* Vertical line */}
+          <div className="absolute left-2 md:left-1/2 top-0 bottom-0 w-[1px]
+                          bg-gradient-to-b from-transparent via-white/10 to-transparent
+                          md:-translate-x-1/2" />
 
-          <div className="space-y-24">
-            {experiences.map((exp, index) => (
-              <motion.div
-                key={exp.id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                className={`relative flex flex-col md:flex-row items-center justify-between w-full ${index % 2 === 0 ? 'md:flex-row-reverse' : ''
-                  }`}
-              >
-                <div className="absolute left-0 md:left-1/2 w-4 h-4 rounded-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] border-4 border-[#030014] z-20 md:-translate-x-1/2 group-hover:scale-125 transition-transform duration-500" />
-                <div className={`w-full md:w-[45%] pl-10 md:pl-0 ${index % 2 === 0 ? 'md:text-left' : 'md:text-right'
-                  }`}>
-                  <div className="group relative p-8 md:p-10 rounded-[2.5rem] border border-white/5 glass-morphism overflow-hidden hover:border-indigo-500/30 transition-all duration-500 hover:-translate-y-2">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/5 blur-[50px] group-hover:bg-indigo-600/10 transition-colors" />
-                    <div className="relative z-10">
-                      <div className={`flex items-center gap-4 mb-6 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                        }`}>
-                        <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                          <Briefcase className="w-5 h-5 text-indigo-400" />
-                        </div>
-                        <span className="text-indigo-400 font-mono tracking-widest text-[10px] font-bold uppercase">{exp.period}</span>
-                      </div>
-                      <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mb-2 group-hover:text-indigo-400 transition-colors">{exp.role}</h3>
-                      <p className="text-lg font-bold text-gray-300 mb-6 uppercase tracking-wider">{exp.company}</p>
-                      <p className="text-gray-400 leading-relaxed font-medium">{exp.description}</p>
+          <div className="space-y-16 md:space-y-24">
+            {experiences.map((exp, index) => {
+              const isCardRight = index % 2 === 0; // even â†’ card left, visual right
+
+              return (
+                <motion.div
+                  key={exp.id}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.65, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="relative"
+                >
+                  <TimelineDot />
+
+                  {/* Row: card + visual â€” reversed on odd index (desktop) */}
+                  <div className={`
+                    flex flex-col md:flex-row items-stretch gap-5 md:gap-0
+                    pl-8 md:pl-0
+                    ${isCardRight ? "" : "md:flex-row-reverse"}
+                  `}>
+                    {/* Card */}
+                    <div className="w-full md:w-[45%]">
+                      <JourneyCard
+                        exp={exp}
+                        isAlignRight={!isCardRight}
+                        onOpen={() => handleOpen(exp)}
+                      />
+                    </div>
+
+                    {/* Center gap */}
+                    <div className="hidden md:block md:w-[10%]" />
+
+                    {/* Visual panel */}
+                    <div className="w-full md:w-[45%]">
+                      <motion.div
+                        initial={{ opacity: 0, x: isCardRight ? 30 : -30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: "-80px" }}
+                        transition={{ duration: 0.55, delay: index * 0.08 + 0.12 }}
+                      >
+                        <JourneyVisualPanel index={index} exp={exp} onOpen={() => handleOpen(exp)} />
+                      </motion.div>
                     </div>
                   </div>
-                </div>
-                <div className="hidden md:block w-[45%]" />
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {selectedExp && (
+          <ExperienceModal exp={selectedExp} onClose={handleClose} />
+        )}
+      </AnimatePresence>
     </section>
   );
 };
+
 
 // PdfThumbnail is lazy-loaded from ./components/PdfThumbnail.tsx
 // This wrapper adds Suspense fallback so the 1.5MB react-pdf bundle
@@ -917,7 +1382,7 @@ const PdfThumbnail = ({ fileUrl }: { fileUrl: string }) => (
     fallback={
       <div className="w-full h-full flex flex-col items-center justify-center bg-[#05001a]/50">
         <div className="w-8 h-8 border-2 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
-        <span className="mt-3 text-[9px] font-mono text-purple-400/60 uppercase tracking-[0.3em]">Loading PDFâ€¦</span>
+        <span className="mt-3 text-[9px] font-mono text-purple-400/60 uppercase tracking-[0.3em]">Loading PDFÃ¢â‚¬Â¦</span>
       </div>
     }
   >
@@ -1042,7 +1507,7 @@ const Certificates = () => {
 
                 <div className="mt-auto pt-6 border-t border-white/5 flex flex-wrap gap-4 items-center justify-between">
                   <span className="text-gray-400 font-mono text-[10px] uppercase tracking-widest font-bold">
-                    {cert.start_year === cert.end_year ? cert.start_year : `${cert.start_year} â€” ${cert.end_year}`}
+                    {cert.start_year === cert.end_year ? cert.start_year : `${cert.start_year} Ã¢â‚¬â€ ${cert.end_year}`}
                   </span>
 
                   {cert.file_url && (

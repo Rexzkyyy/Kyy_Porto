@@ -68,7 +68,7 @@ const Dashboard = ({ onBack }: DashboardProps) => {
     title: '', description: '', icon_name: 'Sparkles'
   });
   const [expForm, setExpForm] = useState({
-    company: '', role: '', period: '', description: ''
+    company: '', role: '', period: '', description: '', images: '', tags: ''
   });
   const [certForm, setCertForm] = useState({
     title: '', issuer: '', start_year: '', end_year: '', description: '', file_url: '', score: ''
@@ -110,12 +110,76 @@ const Dashboard = ({ onBack }: DashboardProps) => {
 
   useEffect(() => { fetchData(); }, []);
 
+  // --- Image Compression Helper ---
+  const compressImage = (file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.8): Promise<File> => {
+    return new Promise((resolve) => {
+      if (!file.type.startsWith('image/')) {
+        return resolve(file); // Don't compress non-image files (e.g. PDFs)
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Resize logic
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return resolve(file);
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                // Convert blob back to File
+                const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                const compressedFile = new File([blob], newFileName, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                });
+                resolve(compressedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = () => resolve(file);
+      };
+      reader.onerror = () => resolve(file);
+    });
+  };
+
   // --- Common Handlers ---
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'project' | 'cert') => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const originalFile = e.target.files?.[0];
+    if (!originalFile) return;
     setUploading(true);
     try {
+      // Compress image if it is an image
+      const file = await compressImage(originalFile);
       const fileName = `${Date.now()}-${file.name}`;
       const { error } = await supabase.storage.from('images').upload(fileName, file);
       if (error) throw error;
@@ -174,14 +238,51 @@ const Dashboard = ({ onBack }: DashboardProps) => {
   // --- Experience Handlers ---
   const handleExpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const tagsArray = expForm.tags ? expForm.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const imagesArray = expForm.images ? expForm.images.split('\n').map(u => u.trim()).filter(Boolean) : [];
+    const payload = { 
+      company: expForm.company, 
+      role: expForm.role, 
+      period: expForm.period, 
+      description: expForm.description,
+      tags: tagsArray,
+      images: imagesArray
+    };
     if (isEditingExp) {
-      await supabase.from('experiences').update(expForm).eq('id', isEditingExp);
+      await supabase.from('experiences').update(payload).eq('id', isEditingExp);
       setIsEditingExp(null);
     } else {
-      await supabase.from('experiences').insert([expForm]);
+      await supabase.from('experiences').insert([payload]);
     }
-    setExpForm({ company: '', role: '', period: '', description: '' });
+    setExpForm({ company: '', role: '', period: '', description: '', images: '', tags: '' });
     fetchData();
+  };
+
+  const handleExpImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const originalFile = files[i];
+        // Compress the image client-side first
+        const file = await compressImage(originalFile);
+        const fileName = `exp-${Date.now()}-${i}-${file.name}`;
+        const { error } = await supabase.storage.from('images').upload(fileName, file);
+        if (error) throw error;
+        const { data: { publicUrl } } = supabase.storage.from('images').getPublicUrl(fileName);
+        uploadedUrls.push(publicUrl);
+      }
+      const existing = expForm.images ? expForm.images.split('\n').map(u => u.trim()).filter(Boolean) : [];
+      setExpForm({ ...expForm, images: [...existing, ...uploadedUrls].join('\n') });
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Upload failed');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   };
 
   // --- Certificate Handlers ---
@@ -560,24 +661,96 @@ const Dashboard = ({ onBack }: DashboardProps) => {
                       <input type="text" placeholder="Professional Role" value={expForm.role} onChange={e => setExpForm({...expForm, role: e.target.value})} className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm" required />
                       <input type="text" placeholder="Period (e.g. 2021 — Present)" value={expForm.period} onChange={e => setExpForm({...expForm, period: e.target.value})} className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm" required />
                       <textarea placeholder="Contribution Description" value={expForm.description} onChange={e => setExpForm({...expForm, description: e.target.value})} className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm h-32" />
+
+                      {/* Tags field */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Tags / Skills (pisahkan koma)</label>
+                        <input
+                          type="text"
+                          placeholder="React, Python, Figma, ..."
+                          value={expForm.tags}
+                          onChange={e => setExpForm({...expForm, tags: e.target.value})}
+                          className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm"
+                        />
+                      </div>
+
+                      {/* Image upload */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Upload Foto/Dokumentasi</label>
+                        <label className={`flex items-center gap-3 w-full p-4 rounded-2xl border border-dashed border-white/20 cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                          {uploading ? <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" /> : <Upload className="w-4 h-4 text-indigo-400" />}
+                          <span className="text-[11px] text-gray-400 font-mono">{uploading ? 'Uploading...' : 'Pilih 1 atau beberapa foto'}</span>
+                          <input type="file" accept="image/*" multiple className="hidden" onChange={handleExpImageUpload} disabled={uploading} />
+                        </label>
+                        {/* URL list textarea */}
+                        <textarea
+                          placeholder="URL gambar (1 per baris) — otomatis terisi setelah upload"
+                          value={expForm.images}
+                          onChange={e => setExpForm({...expForm, images: e.target.value})}
+                          className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-xs font-mono h-24 leading-relaxed"
+                        />
+                        {expForm.images && (
+                          <p className="text-[10px] text-indigo-400 font-mono px-2">
+                            {expForm.images.split('\n').filter(Boolean).length} foto terdaftar
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <button type="submit" className="w-full py-5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl font-black uppercase text-[10px] tracking-widest">{isEditingExp ? 'Update Journey' : 'Log Milestone'}</button>
+                    <div className="flex gap-3">
+                      {isEditingExp && (
+                        <button type="button" onClick={() => { setIsEditingExp(null); setExpForm({ company: '', role: '', period: '', description: '', images: '', tags: '' }); }} className="flex-1 py-5 bg-white/5 border border-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all">
+                          Batal
+                        </button>
+                      )}
+                      <button type="submit" className="flex-1 py-5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl font-black uppercase text-[10px] tracking-widest">{isEditingExp ? 'Update Journey' : 'Log Milestone'}</button>
+                    </div>
                   </form>
                 </div>
 
                 <div className="lg:col-span-2 space-y-4">
                   {experiences.map(exp => (
-                    <div key={exp.id} className="group glass-morphism border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between hover:border-indigo-500/30 transition-all duration-300">
-                      <div className="flex gap-6 items-center">
-                        <div className="p-5 rounded-2xl bg-indigo-500/5 border border-white/10"><Briefcase className="w-6 h-6 text-indigo-400" /></div>
-                        <div>
-                          <h4 className="font-black uppercase text-xl text-white tracking-tight">{exp.role}</h4>
-                          <p className="text-indigo-400 text-xs font-mono uppercase tracking-widest font-bold">{exp.company} • {exp.period}</p>
+                    <div key={exp.id} className="group glass-morphism border border-white/10 p-8 rounded-[2.5rem] hover:border-indigo-500/30 transition-all duration-300">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex gap-6 items-start flex-1 min-w-0">
+                          <div className="p-5 rounded-2xl bg-indigo-500/5 border border-white/10 flex-shrink-0"><Briefcase className="w-6 h-6 text-indigo-400" /></div>
+                          <div className="min-w-0">
+                            <h4 className="font-black uppercase text-xl text-white tracking-tight">{exp.role}</h4>
+                            <p className="text-indigo-400 text-xs font-mono uppercase tracking-widest font-bold">{exp.company} • {exp.period}</p>
+                            {/* Badges row */}
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {exp.images && exp.images.length > 0 && (
+                                <span className="flex items-center gap-1 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-[9px] font-black uppercase tracking-widest text-purple-400">
+                                  <Upload className="w-2.5 h-2.5" /> {exp.images.length} foto
+                                </span>
+                              )}
+                              {exp.tags && exp.tags.length > 0 && exp.tags.slice(0, 3).map((tag: string) => (
+                                <span key={tag} className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[9px] font-mono uppercase tracking-widest text-indigo-400">{tag}</span>
+                              ))}
+                              {exp.tags && exp.tags.length > 3 && (
+                                <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-mono text-gray-500">+{exp.tags.length - 3}</span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => { setIsEditingExp(exp.id); setExpForm({company: exp.company, role: exp.role, period: exp.period, description: exp.description || ''}); }} className="p-4 bg-white/5 rounded-2xl hover:text-indigo-400 transition-colors"><Edit3 className="w-5 h-5" /></button>
-                        <button onClick={async () => { if(confirm('Remove milestone?')) { await supabase.from('experiences').delete().eq('id', exp.id); fetchData(); } }} className="p-4 bg-white/5 rounded-2xl hover:text-red-400 transition-colors"><Trash2 className="w-5 h-5" /></button>
+                        <div className="flex gap-2 flex-shrink-0">
+                          <button
+                            onClick={() => {
+                              setIsEditingExp(exp.id);
+                              setExpForm({
+                                company: exp.company,
+                                role: exp.role,
+                                period: exp.period,
+                                description: exp.description || '',
+                                images: Array.isArray(exp.images) ? exp.images.join('\n') : '',
+                                tags: Array.isArray(exp.tags) ? exp.tags.join(', ') : ''
+                              });
+                            }}
+                            className="p-4 bg-white/5 rounded-2xl hover:text-indigo-400 transition-colors"
+                          >
+                            <Edit3 className="w-5 h-5" />
+                          </button>
+                          <button onClick={async () => { if(confirm('Remove milestone?')) { await supabase.from('experiences').delete().eq('id', exp.id); fetchData(); } }} className="p-4 bg-white/5 rounded-2xl hover:text-red-400 transition-colors"><Trash2 className="w-5 h-5" /></button>
+                        </div>
                       </div>
                     </div>
                   ))}
