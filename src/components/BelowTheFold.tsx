@@ -806,7 +806,7 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
           </div>
         </div>
 
-        {/* Hover glow â€” hanya desktop */}
+        {/* Hover glow — hanya desktop */}
         {!isMobile && (
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent" />
@@ -1391,9 +1391,15 @@ const PdfThumbnail = ({ fileUrl }: { fileUrl: string }) => (
 );
 
 // --- Certificates/Credentials Section ---
+const CERT_ITEMS_PER_PAGE_MOBILE = 3;
+const CERT_ITEMS_PER_PAGE_DESKTOP = 6;
+
 const Certificates = () => {
   const [certs, setCerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
+  const itemsPerPage = isMobile ? CERT_ITEMS_PER_PAGE_MOBILE : CERT_ITEMS_PER_PAGE_DESKTOP;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchCerts = async () => {
@@ -1409,6 +1415,32 @@ const Certificates = () => {
     };
     fetchCerts();
   }, []);
+
+  // Reset to page 1 if itemsPerPage or data changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [certs, itemsPerPage]);
+
+  const totalPages = Math.ceil(certs.length / itemsPerPage);
+  const paginatedCerts = certs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = React.useCallback((page: number) => {
+    if (page === currentPage) return;
+
+    const section = document.getElementById('credentials');
+    if (section) {
+      const offset = section.getBoundingClientRect().top + window.scrollY - 80;
+      const distance = Math.abs(window.scrollY - offset);
+
+      if (distance > 50) {
+        window.scrollTo(0, offset);
+      }
+    }
+    setCurrentPage(page);
+  }, [currentPage]);
 
   if (loading && certs.length === 0) return null;
 
@@ -1438,15 +1470,18 @@ const Certificates = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {certs.map((cert, index) => (
-            <motion.div
-              key={cert.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative rounded-[2.5rem] border border-white/5 glass-morphism overflow-hidden hover:border-purple-500/30 transition-all duration-500 flex flex-col"
-            >
+          <AnimatePresence mode="popLayout">
+            {paginatedCerts.map((cert, index) => (
+              <motion.div
+                key={cert.id}
+                layout
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05, duration: 0.4 }}
+                className="group relative rounded-[2.5rem] border border-white/5 glass-morphism overflow-hidden hover:border-purple-500/30 transition-all duration-500 flex flex-col"
+              >
               {/* Image Preview / PDF Preview */}
               <div className="relative h-48 w-full overflow-hidden bg-[#0a0a0a]">
                 {cert.file_url && (
@@ -1527,9 +1562,79 @@ const Certificates = () => {
                   )}
                 </div>
               </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex items-center justify-center gap-2 mt-10 md:mt-16"
+          >
+            {/* Prev Button — touch target min 44px */}
+            <motion.button
+              whileHover={currentPage > 1 ? { scale: 1.05 } : {}}
+              whileTap={currentPage > 1 ? { scale: 0.95 } : {}}
+              onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              aria-label="Halaman sebelumnya"
+              className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-5 min-h-[44px] py-2 md:py-3 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border ${
+                currentPage === 1
+                  ? 'border-white/5 text-white/20 cursor-not-allowed'
+                  : 'border-white/10 text-gray-300 hover:text-white hover:bg-white/10 bg-white/5 cursor-pointer active:scale-95'
+              }`}
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="hidden sm:inline">Prev</span>
+            </motion.button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1 md:gap-1.5 px-1 md:px-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <motion.button
+                  key={page}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handlePageChange(page)}
+                  aria-label={`Halaman ${page}`}
+                  aria-current={currentPage === page ? 'page' : undefined}
+                  className={`w-10 h-10 md:w-11 md:h-11 rounded-xl text-[11px] font-black tracking-wider transition-all duration-300 border ${
+                    currentPage === page
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-[0_0_20px_rgba(99,102,241,0.4)]'
+                      : 'border-white/10 text-gray-400 hover:text-white hover:bg-white/10 bg-white/5 active:scale-95'
+                  }`}
+                >
+                  {page}
+                </motion.button>
+              ))}
+            </div>
+
+            {/* Next Button — touch target min 44px */}
+            <motion.button
+              whileHover={currentPage < totalPages ? { scale: 1.05 } : {}}
+              whileTap={currentPage < totalPages ? { scale: 0.95 } : {}}
+              onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              aria-label="Halaman berikutnya"
+              className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-5 min-h-[44px] py-2 md:py-3 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border ${
+                currentPage === totalPages
+                  ? 'border-white/5 text-white/20 cursor-not-allowed'
+                  : 'border-white/10 text-gray-300 hover:text-white hover:bg-white/10 bg-white/5 cursor-pointer active:scale-95'
+              }`}
+            >
+              <span className="hidden sm:inline">Next</span>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+              </svg>
+            </motion.button>
+          </motion.div>
+        )}
       </div>
     </section>
   );
