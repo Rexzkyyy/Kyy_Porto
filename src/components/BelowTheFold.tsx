@@ -766,9 +766,9 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
         </div>
 
         {/* Content */}
-        <div className="p-4 md:p-6 lg:p-8 flex-1 flex flex-col">
+        <div className="p-3 md:p-6 lg:p-8 flex-1 flex flex-col">
           <div className="space-y-2 md:space-y-4">
-            {/* Tech tags â€” max 3 di mobile */}
+            {/* Tech tags — max 3 di mobile */}
             <div className="flex flex-wrap gap-1 md:gap-2">
               {project.tech.slice(0, isMobile ? 2 : project.tech.length).map((t: string) => (
                 <span key={t} className="px-2 md:px-3 py-0.5 md:py-1 text-[8px] md:text-[10px] font-mono tracking-widest uppercase bg-purple-500/10 text-purple-300 border border-purple-500/20 rounded-full">
@@ -788,7 +788,7 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onOpenDetails(project)}
-                className="flex-1 min-h-[40px] px-2 md:px-4 py-2 md:py-3 bg-white/5 border border-white/10 rounded-lg md:rounded-xl text-white font-bold text-[9px] md:text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-1.5 hover:bg-white/10 active:scale-95"
+                className="flex-1 min-h-[40px] px-1.5 md:px-4 py-2 md:py-3 bg-white/5 border border-white/10 rounded-lg md:rounded-xl text-white font-bold text-[8.5px] md:text-[10px] tracking-wide md:tracking-widest uppercase transition-all flex items-center justify-center gap-1 md:gap-1.5 hover:bg-white/10 active:scale-95"
               >
                 <Sparkles className="w-3 h-3 text-purple-400 flex-shrink-0" />
                 <span className="hidden sm:inline">Detail</span>
@@ -796,7 +796,7 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
               </button>
               <button
                 onClick={() => onOpenDetails(project)}
-                className="flex-1 min-h-[40px] px-2 md:px-4 py-2 md:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg md:rounded-xl text-white font-bold text-[9px] md:text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/20 active:scale-95"
+                className="flex-1 min-h-[40px] px-1.5 md:px-4 py-2 md:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg md:rounded-xl text-white font-bold text-[8.5px] md:text-[10px] tracking-wide md:tracking-widest uppercase transition-all flex items-center justify-center gap-1 md:gap-1.5 shadow-lg shadow-purple-500/20 active:scale-95"
               >
                 <Globe className="w-3 h-3 flex-shrink-0" />
                 <span className="hidden sm:inline">Lihat</span>
