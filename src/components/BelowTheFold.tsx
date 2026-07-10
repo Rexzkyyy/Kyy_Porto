@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useAnimationFrame } from 'framer-motion';
 import {
   Github, Mail,
@@ -1260,7 +1260,7 @@ const Journey = () => {
       .from("experiences")
       .select("*")
       .order("id", { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: any; error: any }) => {
         if (error) console.error("Error fetching experiences:", error);
         else if (data) setExperiences(data);
         setLoading(false);
