@@ -8,6 +8,7 @@ import {
   Sparkles, Briefcase, Award
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { ProductSection } from './ProductSection';
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(() => {
@@ -785,23 +786,36 @@ const ProjectCard = React.memo(({ project, index, onOpenDetails }: { project: an
           </div>
 
           <div className="mt-auto pt-3 md:pt-6 border-t border-white/5">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <button
                 onClick={() => onOpenDetails(project)}
-                className="flex-1 min-h-[40px] px-1.5 md:px-4 py-2 md:py-3 bg-white/5 border border-white/10 rounded-lg md:rounded-xl text-white font-bold text-[8.5px] md:text-[10px] tracking-wide md:tracking-widest uppercase transition-all flex items-center justify-center gap-1 md:gap-1.5 hover:bg-white/10 active:scale-95"
+                className="flex-1 min-h-[32px] md:min-h-[40px] px-1 md:px-4 py-1.5 md:py-3 bg-white/5 border border-white/10 rounded-lg md:rounded-xl text-white font-bold text-[7.5px] sm:text-[8px] md:text-[10px] tracking-wider md:tracking-widest uppercase transition-all flex items-center justify-center gap-1 md:gap-1.5 hover:bg-white/10 active:scale-95"
               >
-                <Sparkles className="w-3 h-3 text-purple-400 flex-shrink-0" />
+                <Sparkles className="w-2.5 h-2.5 md:w-3 md:h-3 text-purple-400 flex-shrink-0" />
                 <span className="hidden sm:inline">Detail</span>
                 <span className="sm:hidden">Info</span>
               </button>
-              <button
-                onClick={() => onOpenDetails(project)}
-                className="flex-1 min-h-[40px] px-1.5 md:px-4 py-2 md:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg md:rounded-xl text-white font-bold text-[8.5px] md:text-[10px] tracking-wide md:tracking-widest uppercase transition-all flex items-center justify-center gap-1 md:gap-1.5 shadow-lg shadow-purple-500/20 active:scale-95"
-              >
-                <Globe className="w-3 h-3 flex-shrink-0" />
-                <span className="hidden sm:inline">Lihat</span>
-                <span className="sm:hidden">Open</span>
-              </button>
+              {project.link && project.link !== "#" ? (
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 min-h-[32px] md:min-h-[40px] px-1 md:px-4 py-1.5 md:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg md:rounded-xl text-white font-bold text-[7.5px] sm:text-[8px] md:text-[10px] tracking-wider md:tracking-widest uppercase transition-all flex items-center justify-center gap-1 md:gap-1.5 shadow-lg shadow-purple-500/20 active:scale-95"
+                >
+                  <Globe className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+                  <span className="hidden sm:inline">Lihat</span>
+                  <span className="sm:hidden">Open</span>
+                </a>
+              ) : (
+                <button
+                  onClick={() => onOpenDetails(project)}
+                  className="flex-1 min-h-[32px] md:min-h-[40px] px-1 md:px-4 py-1.5 md:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg md:rounded-xl text-white font-bold text-[7.5px] sm:text-[8px] md:text-[10px] tracking-wider md:tracking-widest uppercase transition-all flex items-center justify-center gap-1 md:gap-1.5 shadow-lg shadow-purple-500/20 active:scale-95"
+                >
+                  <Globe className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+                  <span className="hidden sm:inline">Lihat</span>
+                  <span className="sm:hidden">Open</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -1635,6 +1649,13 @@ const Certificates = () => {
             </motion.button>
           </motion.div>
         )}
+
+        {/* Info halaman */}
+        {totalPages > 1 && (
+          <p className="text-center text-gray-600 text-[10px] font-mono uppercase tracking-widest mt-3 md:mt-4">
+            Hal. {currentPage}/{totalPages} &mdash; {certs.length} Kredensial
+          </p>
+        )}
       </div>
     </section>
   );
@@ -1797,6 +1818,7 @@ export default function BelowTheFold({ profile, socials }: { profile: any, socia
       <About profile={profile} />
       <Expertise />
       <Projects />
+      <ProductSection />
       <Journey />
       <Certificates />
       <Contact profile={profile} socials={socials} />

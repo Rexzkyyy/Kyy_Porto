@@ -584,6 +584,25 @@ export default function App() {
     };
   }, []);
 
+  // Handle hash scrolling
+  useEffect(() => {
+    if (window.location.hash && !isSiteLoading) {
+      const id = window.location.hash.substring(1);
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = el.getBoundingClientRect().top;
+          window.scrollTo({
+            top: elementRect - bodyRect - offset,
+            behavior: 'smooth'
+          });
+        }
+      }, 500); // Wait for render
+    }
+  }, [isSiteLoading]);
+
   return (
     <MotionConfig reducedMotion="user">
     <div className="bg-[#030014] text-white selection:bg-purple-500 selection:text-white relative min-h-screen font-body">

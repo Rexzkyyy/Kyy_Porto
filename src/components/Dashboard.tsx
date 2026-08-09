@@ -4,7 +4,7 @@ import {
   FolderKanban, UserCog, Save, Github, 
   Globe as GlobeIcon, Mail, Edit3, X, Upload, Loader2, Filter, Link2,
   Terminal, Zap, Database, Smartphone, Palette, Share2, Instagram, Linkedin, MessageCircle,
-  Gem, Sparkles, Wand2, Briefcase, GraduationCap, Award, ExternalLink
+  Gem, Sparkles, Wand2, Briefcase, GraduationCap, Award, ExternalLink, ShoppingCart
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -42,7 +42,7 @@ const ICON_OPTIONS = [
 ];
 
 const Dashboard = ({ onBack }: DashboardProps) => {
-  const [activeTab, setActiveTab] = useState<'projects' | 'profile' | 'skills' | 'experiences' | 'certificates' | 'socials'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'products' | 'profile' | 'skills' | 'experiences' | 'certificates' | 'socials'>('projects');
   
   // States
   const [projects, setProjects] = useState<any[]>([]);
@@ -56,6 +56,8 @@ const Dashboard = ({ onBack }: DashboardProps) => {
   const [isEditingExp, setIsEditingExp] = useState<number | null>(null);
   const [isEditingCert, setIsEditingCert] = useState<number | null>(null);
   const [isEditingSocial, setIsEditingSocial] = useState<number | null>(null);
+  const [isEditingProduct, setIsEditingProduct] = useState<number | null>(null);
+  const [products, setProducts] = useState<any[]>([]);
   
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
@@ -63,6 +65,9 @@ const Dashboard = ({ onBack }: DashboardProps) => {
   // Form States
   const [formData, setFormData] = useState({
     title: '', description: '', image: '', tech: '', link: '', icon_name: 'Code2', category: 'Web Programming'
+  });
+  const [productForm, setProductForm] = useState({
+    title: '', description: '', price: '', image_url: '', checkout_url: '', is_active: true, content_sections: [] as { image_url: string, description: string }[]
   });
   const [skillForm, setSkillForm] = useState({
     title: '', description: '', icon_name: 'Sparkles'
@@ -98,6 +103,9 @@ const Dashboard = ({ onBack }: DashboardProps) => {
     const { data: socialData } = await supabase.from('socials').select('*').order('id', { ascending: true });
     if (socialData) setSocials(socialData || []);
 
+    const { data: prodData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    if (prodData) setProducts(prodData);
+
     const { data: profData } = await supabase.from('profile').select('*').single();
     if (profData) {
       setProfile({
@@ -111,7 +119,7 @@ const Dashboard = ({ onBack }: DashboardProps) => {
   useEffect(() => { fetchData(); }, []);
 
   // --- Image Compression Helper ---
-  const compressImage = (file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.8): Promise<File> => {
+  const compressImage = (file: File, maxWidth = 1000, maxHeight = 1000, quality = 0.7): Promise<File> => {
     return new Promise((resolve) => {
       if (!file.type.startsWith('image/')) {
         return resolve(file); // Don't compress non-image files (e.g. PDFs)
@@ -152,9 +160,9 @@ const Dashboard = ({ onBack }: DashboardProps) => {
             (blob) => {
               if (blob) {
                 // Convert blob back to File
-                const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
                 const compressedFile = new File([blob], newFileName, {
-                  type: 'image/jpeg',
+                  type: 'image/webp',
                   lastModified: Date.now()
                 });
                 resolve(compressedFile);
@@ -162,7 +170,7 @@ const Dashboard = ({ onBack }: DashboardProps) => {
                 resolve(file);
               }
             },
-            'image/jpeg',
+            'image/webp',
             quality
           );
         };
@@ -173,7 +181,7 @@ const Dashboard = ({ onBack }: DashboardProps) => {
   };
 
   // --- Common Handlers ---
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'project' | 'cert') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'project' | 'cert' | 'product' | 'product_section', sectionIndex?: number) => {
     const originalFile = e.target.files?.[0];
     if (!originalFile) return;
     setUploading(true);
@@ -185,6 +193,12 @@ const Dashboard = ({ onBack }: DashboardProps) => {
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage.from('images').getPublicUrl(fileName);
       if (target === 'project') setFormData({ ...formData, image: publicUrl });
+      else if (target === 'product') setProductForm({ ...productForm, image_url: publicUrl });
+      else if (target === 'product_section' && sectionIndex !== undefined) {
+        const newSections = [...(productForm.content_sections || [])];
+        newSections[sectionIndex].image_url = publicUrl;
+        setProductForm({ ...productForm, content_sections: newSections });
+      }
       else setCertForm({ ...certForm, file_url: publicUrl });
     } catch (err) {
       console.error('Upload error:', err);
@@ -220,6 +234,19 @@ const Dashboard = ({ onBack }: DashboardProps) => {
       icon_name: p.icon_name || 'Code2',
       category: p.category || 'Web Programming'
     });
+  };
+
+  // --- Product Handlers ---
+  const handleProductSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isEditingProduct) {
+      await supabase.from('products').update(productForm).eq('id', isEditingProduct);
+      setIsEditingProduct(null);
+    } else {
+      await supabase.from('products').insert([productForm]);
+    }
+    setProductForm({ title: '', description: '', price: '', image_url: '', checkout_url: '', is_active: true, content_sections: [] });
+    fetchData();
   };
 
   // --- Skill Handlers ---
@@ -359,6 +386,7 @@ const Dashboard = ({ onBack }: DashboardProps) => {
         <nav className="flex-1 px-4 space-y-2">
           {[
             { id: 'projects', name: 'Artifacts', icon: FolderKanban },
+            { id: 'products', name: 'Labs', icon: ShoppingCart },
             { id: 'skills', name: 'Expertise', icon: Sparkles },
             { id: 'experiences', name: 'Journey', icon: Briefcase },
             { id: 'certificates', name: 'Credentials', icon: Award },
@@ -509,6 +537,134 @@ const Dashboard = ({ onBack }: DashboardProps) => {
                               <GlobeIcon className="w-4 h-4" />
                               Lihat Artiffak
                             </button>
+                          </div>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'products' && (
+            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+              <div className="mb-14">
+                <h2 className="text-5xl font-black font-display uppercase tracking-tighter">Premium Labs</h2>
+                <p className="text-gray-500 font-mono text-[10px] uppercase mt-3 tracking-[0.4em]">Digital Assets Management</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-14">
+                <div className="lg:col-span-1">
+                  <div className={`glass-morphism border rounded-[2.5rem] p-8 md:p-10 space-y-8 sticky top-10 transition-all duration-500 ${isEditingProduct ? 'border-indigo-500/40' : 'border-white/10'}`}>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3">
+                        {isEditingProduct ? <Edit3 className="w-5 h-5 text-indigo-400" /> : <Plus className="w-5 h-5 text-purple-400" />}
+                        {isEditingProduct ? 'Edit Product' : 'New Product'}
+                      </h3>
+                      {isEditingProduct && <button onClick={() => {setIsEditingProduct(null); setProductForm({ title: '', description: '', price: '', image_url: '', checkout_url: '', is_active: true, content_sections: [] })}} className="p-2 text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>}
+                    </div>
+
+                    <form onSubmit={handleProductSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Title</label>
+                        <input type="text" value={productForm.title} onChange={e => setProductForm({...productForm, title: e.target.value})} className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-purple-500/50 text-sm" required />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Product Image</label>
+                        <div className="relative group/upload">
+                          <input type="file" accept="image/*" onChange={e => handleFileUpload(e, 'product')} className="hidden" id="prod-file" />
+                          <label htmlFor="prod-file" className="w-full flex flex-col items-center justify-center p-8 bg-white/5 border-2 border-dashed border-white/10 rounded-[2rem] hover:border-purple-500/50 transition-all cursor-pointer">
+                            {uploading ? <Loader2 className="w-6 h-6 animate-spin text-purple-400" /> : (
+                              <>
+                                <Upload className="w-6 h-6 text-gray-500 mb-2" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 group-hover/upload:text-purple-400">Upload Image</span>
+                              </>
+                            )}
+                          </label>
+                        </div>
+                        {productForm.image_url && <p className="text-[9px] text-green-500 font-mono tracking-widest mt-2 uppercase">Image Uploaded</p>}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Description</label>
+                        <textarea value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-purple-500/50 text-sm h-32" required />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Price Label</label>
+                        <input type="text" value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-purple-500/50 text-sm" placeholder="e.g. $49 or Free" />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Checkout / Link URL</label>
+                        <input type="text" value={productForm.checkout_url} onChange={e => setProductForm({...productForm, checkout_url: e.target.value})} className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-purple-500/50 text-sm" placeholder="https://..." />
+                      </div>
+
+                      <div className="flex items-center gap-2 px-2">
+                        <input type="checkbox" id="is_active" checked={productForm.is_active} onChange={e => setProductForm({...productForm, is_active: e.target.checked})} className="w-4 h-4 rounded bg-white/5 border-white/10 text-indigo-500 focus:ring-indigo-500/50 focus:ring-offset-0" />
+                        <label htmlFor="is_active" className="text-[10px] font-black text-gray-500 uppercase tracking-widest cursor-pointer">Visible to Public</label>
+                      </div>
+
+                      <div className="space-y-4 pt-6 border-t border-white/10">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Storytelling Sections</label>
+                          <button type="button" onClick={() => setProductForm({...productForm, content_sections: [...(productForm.content_sections || []), { image_url: '', description: '' }]})} className="text-[9px] font-bold uppercase tracking-widest text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                            <Plus className="w-3 h-3" /> Add Section
+                          </button>
+                        </div>
+                        {(productForm.content_sections || []).map((sec, i) => (
+                          <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-4 relative">
+                            <button type="button" onClick={() => { const s = [...productForm.content_sections]; s.splice(i, 1); setProductForm({...productForm, content_sections: s}); }} className="absolute top-4 right-4 text-gray-500 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                            <span className="text-[9px] font-mono text-gray-500 uppercase">Section {i + 1}</span>
+                            <div className="space-y-2">
+                              <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Image</label>
+                              {sec.image_url ? (
+                                <div className="relative group">
+                                  <img src={sec.image_url} className="w-full h-32 object-cover rounded-xl border border-white/10" />
+                                  <button type="button" onClick={() => { const s = [...productForm.content_sections]; s[i].image_url = ''; setProductForm({...productForm, content_sections: s}); }} className="absolute top-2 right-2 bg-red-500/80 p-1.5 rounded-lg text-white"><X className="w-3 h-3" /></button>
+                                </div>
+                              ) : (
+                                <div className="relative group/upload">
+                                  <input type="file" accept="image/*" onChange={e => handleFileUpload(e, 'product_section', i)} className="hidden" id={`sec-file-${i}`} />
+                                  <label htmlFor={`sec-file-${i}`} className="w-full h-20 flex items-center justify-center bg-white/5 border border-dashed border-white/20 rounded-xl hover:border-indigo-500/50 cursor-pointer">
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Upload Image</span>
+                                  </label>
+                                </div>
+                              )}
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Description</label>
+                              <textarea value={sec.description} onChange={e => { const s = [...productForm.content_sections]; s[i].description = e.target.value; setProductForm({...productForm, content_sections: s}); }} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl outline-none focus:border-indigo-500/50 text-xs h-20" required />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button type="submit" className="w-full py-5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px]">
+                        {isEditingProduct ? 'Update Product' : 'Add Product'}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                  <div className="lg:col-span-2">
+                   <div className="grid grid-cols-1 gap-6">
+                      {products.map((p) => (
+                        <div key={p.id} className="group glass-morphism border border-white/10 p-8 rounded-[2.5rem] flex flex-col gap-8 hover:border-indigo-500/30 transition-all duration-300">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-6">
+                              <img src={p.image_url} className="w-20 h-20 rounded-[1.5rem] object-cover border border-white/10" />
+                              <div>
+                                  <h4 className="text-xl font-black uppercase tracking-tight text-white mb-1">{p.title}</h4>
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <span className="text-[10px] font-mono p-1 px-2 bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">{p.price || 'Free'}</span>
+                                    {!p.is_active && <span className="text-[10px] font-mono p-1 px-2 bg-red-500/10 text-red-400 rounded-lg border border-red-500/20">Hidden</span>}
+                                  </div>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={() => {setIsEditingProduct(p.id); setProductForm({ title: p.title, description: p.description||'', price: p.price||'', image_url: p.image_url||'', checkout_url: p.checkout_url||'', is_active: p.is_active, content_sections: p.content_sections||[] })}} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-gray-400 hover:text-indigo-400 transition-all"><Edit3 className="w-5 h-5" /></button>
+                              <button onClick={async () => { if(confirm('Delete product?')) { await supabase.from('products').delete().eq('id', p.id); fetchData(); } }} className="p-4 bg-white/5 hover:bg-red-500/10 rounded-2xl text-gray-400 hover:text-red-400 transition-all"><Trash2 className="w-5 h-5" /></button>
+                            </div>
                           </div>
                         </div>
                       ))}
